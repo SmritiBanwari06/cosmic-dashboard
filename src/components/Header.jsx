@@ -4,25 +4,29 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   return (
-    <div className="navbar bg-black shadow-sm px-6">
-      <div className="flex-1 flex items-center ml-10">
-        <img className="w-20 h-auto" alt="nasa_logo" src="src/nasa_logo.webp" />
-        <span className="text-2xl text-white font-bold ml-4">
-          Cosmic Dashboard
-        </span>
-      </div>
+    <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 shadow-2xl py-4 px-2">
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        <div className="flex items-center space-x-4">
+          <img
+            className="w-16 h-auto rounded-lg"
+            alt="nasa_logo"
+            src="src/nasa_logo.webp"
+          />
+          <h1 className="text-white text-2xl font-bold tracking-wide drop-shadow-lg">
+            Cosmic Dashboard
+          </h1>
+        </div>
 
-      <div className="flex-none">
-        <form className="flex items-center bg-gray-800 rounded-full px-3 py-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-500">
-          <FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400" />
+        <form className="flex items-center bg-gray-700 bg-opacity-70 backdrop-blur-md rounded-full px-4 py-2 shadow-md transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-500">
+          <FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-300" />
           <input
             type="text"
             placeholder="Search NASA data..."
-            className="bg-transparent text-white placeholder-gray-400 outline-none ml-2 w-48 focus:w-64 transition-all duration-300"
+            className="bg-transparent text-white placeholder-gray-400 outline-none ml-3 w-48 focus:w-64 transition-all duration-300"
           />
         </form>
       </div>
-    </div>
+    </header>
   );
 };
 

@@ -3,27 +3,33 @@ import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import ButtonBase from "@mui/material/ButtonBase";
 import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
+import { API_OPTIONS } from "../utility/constant";
 
 const images = [
   {
-    url: "https://apod.nasa.gov/apod/image/2508/Wispit4b_eso_960.jpg",
     title: "APOD",
     width: "50%",
+    path: "/apod",
+    api: "apod",
   },
   {
-    url: "http://mars.jpl.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/01000/opgs/edr/fcam/FLB_486265257EDR_F0481570FHAZ00323M_.JPG",
     title: "Mars Rover Cameras",
     width: "50%",
+    path: "/mars-rover",
+    api: "mars-rover",
   },
   {
-    url: "/static/images/buttons/camera.jpg",
     title: "Camera",
     width: "50%",
+    path: "/apod",
+    api: "camera",
   },
   {
-    url: "/static/images/buttons/camera.jpg",
     title: "Camera",
     width: "50%",
+    path: "/apod",
+    api: "camera",
   },
 ];
 
@@ -31,7 +37,7 @@ const ImageButton = styled(ButtonBase)(({ theme }) => ({
   position: "relative",
   height: 200,
   [theme.breakpoints.down("sm")]: {
-    width: "100% !important", // Overrides inline-style
+    width: "100% !important",
     height: 100,
   },
   "&:hover, &.Mui-focusVisible": {
@@ -92,19 +98,66 @@ const ImageMarked = styled("span")(({ theme }) => ({
 }));
 
 export default function Cards() {
+  const navigate = useNavigate();
+  const [imageMap, setImageMap] = React.useState({});
+
+  React.useEffect(() => {
+    images.forEach(async (card) => {
+      let url = "";
+      if (card.api === "apod") {
+        url = `/nasa/planetary/apod?api_key=${
+          import.meta.env.VITE_NASA_API_KEY
+        }`;
+      } else if (card.api === "mars-rover") {
+        url = `/nasa/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&camera=fhaz&api_key=${
+          import.meta.env.VITE_NASA_API_KEY
+        }`;
+      }
+
+      try {
+        const response = await fetch(url, API_OPTIONS);
+        const json = await response.json();
+
+        let imageUrl = "";
+        if (card.api === "apod") {
+          imageUrl = json.hdurl;
+        } else if (card.api === "mars-rover") {
+          console.log("mars Rover json", json);
+          imageUrl = json.photos?.[0]?.img_src;
+        }
+
+        setImageMap((prev) => ({
+          ...prev,
+          [card.title]: imageUrl,
+        }));
+      } catch (error) {
+        console.error(`Error fetching image for ${card.title}`, error);
+      }
+    });
+  }, []);
+
   return (
     <Box
-      sx={{ display: "flex", flexWrap: "wrap", minWidth: 300, width: "100%" }}
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        paddingTop: "200px",
+        minWidth: 500,
+        width: "100%",
+      }}
     >
       {images.map((image) => (
         <ImageButton
           focusRipple
           key={image.title}
-          style={{
-            width: image.width,
-          }}
+          style={{ width: image.width }}
+          onClick={() => navigate(image.path)}
         >
-          <ImageSrc style={{ backgroundImage: `url(${image.url})` }} />
+          <ImageSrc
+            style={{
+              backgroundImage: `url(${imageMap[image.title]})`,
+            }}
+          />
           <ImageBackdrop className="MuiImageBackdrop-root" />
           <Image>
             <Typography
